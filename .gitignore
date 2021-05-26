@@ -6,6 +6,4 @@ node_modules/
 public/
 .deploy*/
 
-# Ignore themes but keep the config
 themes/
-!themes\next\_config.yml
