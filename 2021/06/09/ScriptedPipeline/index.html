@@ -29,7 +29,7 @@
 <meta property="og:description" content="前陣子使用 Jenkins 幫助公司自動化建置程式，也稍微接觸了 CI&#x2F;CD，畢竟 Jenkins 就是一款 CI&#x2F;CD 工具。 此處的 CI 是指持續整合（Continuous Integration），而 CD 則是持續交付或持續部屬（Continuous Delivery &#x2F; Continuous Deployment）。 但這篇文章僅介紹如何撰寫 Jenkins Pipeline sc">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-09T12:00:00.000Z">
-<meta property="article:modified_time" content="2021-06-09T11:15:06.233Z">
+<meta property="article:modified_time" content="2021-06-10T15:05:35.232Z">
 <meta property="article:author" content="Chihyu Chen">
 <meta property="article:tag" content="Jenkins">
 <meta property="article:tag" content="Pipeline">
@@ -187,10 +187,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
-              
 
-              <time title="創建時間：2021-06-09 20:00:00 / 修改時間：19:15:06" itemprop="dateCreated datePublished" datetime="2021-06-09T20:00:00+08:00">2021-06-09</time>
+              <time title="創建時間：2021-06-09 20:00:00" itemprop="dateCreated datePublished" datetime="2021-06-09T20:00:00+08:00">2021-06-09</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2021-06-10 23:05:35" itemprop="dateModified" datetime="2021-06-10T23:05:35+08:00">2021-06-10</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -237,10 +243,10 @@
 <p>跟在 Linux 相同用法，<code>echo</code> 顯示的文字都會被保存在 Jenkins 的建置日誌檔中，我幾乎都用來確認該階段的狀態 <code>echo "Stage Build result: $currentBuild.result"</code>。</p>
 <p>其中 <code>$currentBuild.result</code> 是 Jenkins 原生變數，預設值是 null。呼叫前需要自行先設定 <code>currentBuild.result = 'SUCCESS'</code>、<code>currentBuild.result = 'FAILURE'</code> 或者 <code>currentBuild.result = 'UNSTABLE'</code>，分別會顯示綠燈、紅燈或黃燈。</p>
 <h3 id="sh">sh</h3>
-<p>在 Unix/Linux 系統使用終端機，如果要在 Windows 系統下使用，可以替換為 <code>bat</code>。能將各種指令包進去，簡單的用法好比說 <code>sh 'cd;mkdir ~/ExDir;touch ~/ExDir/ExFile.log'</code>，也能加上參數以便擷取終端機的標準輸出：</p>
+<p>在 Unix/Linux 系統使用終端機，如果要在 Windows 系統下使用，可以替換為 <code>bat</code>。能將各種指令包進去，簡單的用法好比說 <code>sh 'cd;mkdir ~/ExDir;touch ~/ExDir/ExFile.log'</code>，也能加上其他選項，例如 <code>returnStdout: true</code> 可以將終端機的標準輸出作為回傳值另作他用。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def FILE_TAIL &#x3D; null</span><br><span class="line">node&#123;</span><br><span class="line">    stage(&#39;Get the tail of log file&#39;) &#123;</span><br><span class="line">        FILE_TAIL &#x3D; sh(script: &#39;tail ~&#x2F;ExDir&#x2F;ExFile.log&#39;, returnStdout: true).trim()</span><br><span class="line">        echo &quot;The tail of log file is $&#123;FILE_TAIL&#125;&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上範例中，<code>def FILE_TAIL = null</code> 這個變數 <code>FILE_TAIL</code> 也可以定義在節點區塊或者階段區塊內，就只是全域變數和區域變數的差異。需要注意的是，一旦為 <code>sh</code> 增加參數，就必須將預設可忽略的 <code>script</code> 參數清楚標示，且參數之間要以逗號區隔。如果覺得參數太長、不易閱讀而想要分行，那就使用 <code>+</code> 連結字串。</p>
-<p>其實這個範例有點脫褲字放屁，因為不特別使用參數 <code>returnStdout: true</code> 時，<code>sh</code> 的標準輸出就會自動被寫入建置日誌檔，現在卻特地擷取 <code>sh</code> 的標準輸出，再交給 <code>echo</code> 寫入建置日誌檔……沒關係，後面會提到條件控制，就能對變數 <code>FILE_TAIL</code> 做些特別處理了！可參閱官方文件獲得更多 <a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/pipeline/steps/workflow-durable-task-step/#sh-shell-script" title="sh Shell Script">sh 參數</a>的介紹。</p>
+<p>以上範例中，<code>def FILE_TAIL = null</code> 這個變數 <code>FILE_TAIL</code> 也可以定義在節點區塊或者階段區塊內，就只是全域變數和區域變數的差異。需要注意的是，一旦為 <code>sh</code> 增加選項，就必須將預設可忽略的 <code>script</code> 選項清楚標示，且選項之間要以逗號區隔。如果覺得選項太長、不易閱讀而想要分行，<code>sh</code> 括號內接受換行。如果覺得字串太長，可以使用 <code>+</code> 連結。</p>
+<p>其實這個範例有點脫褲字放屁，因為不特別使用 <code>returnStdout: true</code> 時，<code>sh</code> 的標準輸出就會自動被寫入建置日誌檔，現在卻特地擷取 <code>sh</code> 的標準輸出，再交給 <code>echo</code> 寫入建置日誌檔……沒關係，後面會提到條件控制，就能對變數 <code>FILE_TAIL</code> 做些特別處理了！可參閱官方文件獲得<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/pipeline/steps/workflow-durable-task-step/#sh-shell-script" title="sh Shell Script">更多 sh 的介紹</a>。</p>
 <p>另外，單引號 <code>''</code> 與雙引號 <code>""</code> 內的變數 <code>$&#123;FILE_TAIL&#125;</code> 會有<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#string-interpolation" title="String interpolation">不同的結果</a>，需要多加留意。</p>
 <h2 id="語法">語法</h2>
 <p>在官方文件的<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline" title="Scripted Pipeline Syntax">語法說明</a>中，提到 <strong>Scripted Pipeline</strong> 才能使用的兩種語法：<strong>條件控制</strong>與<strong>異常處理</strong>。也就是其他程式語言中常見的 <code>if…else…</code> 以及 <code>try…catch…finally…</code>，後者似乎只有部份語言支援。</p>
@@ -255,8 +261,8 @@
 <p>條件可以用 <code>&amp;&amp;</code> 表示<strong>兩者皆須成立</strong>，以及 <code>||</code> 表示<strong>其中一者成立</strong>，更加細膩地避開各種意料外的現象。以下是個簡單的例子：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">node &#123;</span><br><span class="line">    stage(&#39;Example&#39;) &#123;</span><br><span class="line">        if(currentBuild.result &#x3D;&#x3D; null || currentBuild.result &#x3D;&#x3D; &#39;SUCCESS&#39;) &#123;</span><br><span class="line">            echo &#39;OK&#39;</span><br><span class="line">        &#125; else if(currentBuild.result &#x3D;&#x3D; &#39;UNSTABLE&#39;) &#123;</span><br><span class="line">            echo &#39;So-so&#39;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            echo &#39;NG&#39;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="定義新函式">定義新函式</h2>
-<p>除了使用 <code>def</code> 定義新變數，也可以用來定義新函式，這邊直接放範例，裡面比較特別的只有 <code>slackSend(channel:'#backup', color: colorCode, message: msg)</code> 將 <code>message</code> 參數帶的字串經 Slack 傳進 <code>channel</code> 參數指定的群組中，並以 <code>color</code> 參數指定的顏色強調該則訊息。</p>
-<p>不過要使用 <code>slackSend</code> 之前，記得要先在 Jenkins 安裝好 <a target="_blank" rel="noopener" href="https://plugins.jenkins.io/slack/" title="Slack Notification">Slack Plugin</a>！當然也要下載好 Slack，創建參數指定的該群組。另外還有 email 跟 HipChat 的通知套件可以使用，但我沒有實作過，就不野人獻曝了。</p>
+<p>除了使用 <code>def</code> 定義新變數，也可以用來定義新函式，這邊直接放範例，裡面比較特別的只有 <code>slackSend(channel:'#backup', color: colorCode, message: msg)</code> 將 <code>message</code> 指定的字串作為訊息經 Slack 傳進 <code>channel</code> 指定的群組中，並以 <code>color</code> 指定的顏色強調該則訊息。</p>
+<p>不過要使用 <code>slackSend</code> 之前，記得要先在 Jenkins 安裝好 <a target="_blank" rel="noopener" href="https://plugins.jenkins.io/slack/" title="Slack Notification">Slack Plugin</a>！當然也要事先下載 Slack，創建指定的群組。另外還有 email 跟 HipChat 的通知套件可以使用，但我沒有實作過，就不野人獻曝了。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">def costomizedSlackSend(String result &#x3D; &#39;UNKNOWN&#39;) &#123;</span><br><span class="line">    &#x2F;&#x2F; Default values</span><br><span class="line">    def colorCode &#x3D; &#39;#FF0000&#39;</span><br><span class="line">    def message &#x3D; &quot;$&#123;result&#125;: $&#123;env.JOB_NAME&#125; #$&#123;env.BUILD_NUMBER&#125; ($&#123;env.BUILD_URL&#125;)&quot;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Override default color code based on result</span><br><span class="line">    if (result &#x3D;&#x3D; &#39;SUCCESS&#39;) &#123;</span><br><span class="line">        colorCode &#x3D; &#39;#00FF00&#39;</span><br><span class="line">    &#125; else if (result &#x3D;&#x3D; &#39;UNSTABLE&#39;) &#123;</span><br><span class="line">        colorCode &#x3D; &#39;#FFFF00&#39;</span><br><span class="line">    &#125; else if (result &#x3D;&#x3D; &#39;UNKNOWN&#39;) &#123;</span><br><span class="line">        colorCode &#x3D; &#39;#C0C0C0&#39;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Send notification to Slack</span><br><span class="line">    slackSend(channel:&#39;#backup&#39;, color: colorCode, message: message)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="總結">總結</h2>
 <p>為了整理這篇文章，感覺又查了不少資料，對於 Scripted Pipeline 也更熟悉了些。希望下次使用時，不會太惶恐，也不要再發生「我好像有看過這個東西，但又想不起來要怎麼用」的悲劇。</p>
