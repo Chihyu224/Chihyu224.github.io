@@ -24,17 +24,17 @@
   <meta name="description" content="有時候使用 vim 編輯文件，突然畫面就沒有回應，連游標都不會移動。但是切換到同一終端機的其他分頁時，可以正常操作任何行為。對於使用者而言，這就像是鬼打牆啊……">
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何喚回 vim">
-<meta property="og:url" content="https://chihyu224.github.io/2021/06/16/HowToFixNoOutputInVim/index.html">
+<meta property="og:url" content="https://chihyu224.github.io/2021-06-16-How-to-Fix-no-Output-in-vim/index.html">
 <meta property="og:site_name" content="告別愛因斯坦與蘇格拉底，開始編譯 Hello, world!">
 <meta property="og:description" content="有時候使用 vim 編輯文件，突然畫面就沒有回應，連游標都不會移動。但是切換到同一終端機的其他分頁時，可以正常操作任何行為。對於使用者而言，這就像是鬼打牆啊……">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-16T11:10:00.000Z">
-<meta property="article:modified_time" content="2021-06-16T11:13:20.495Z">
+<meta property="article:modified_time" content="2021-06-16T11:55:30.278Z">
 <meta property="article:author" content="Chihyu Chen">
 <meta property="article:tag" content="vim">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://chihyu224.github.io/2021/06/16/HowToFixNoOutputInVim/">
+<link rel="canonical" href="https://chihyu224.github.io/2021-06-16-How-to-Fix-no-Output-in-vim/">
 
 
 <script id="page-configurations">
@@ -163,7 +163,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://chihyu224.github.io/2021/06/16/HowToFixNoOutputInVim/">
+    <link itemprop="mainEntityOfPage" href="https://chihyu224.github.io/2021-06-16-How-to-Fix-no-Output-in-vim/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -187,7 +187,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-06-16 19:10:00 / 修改時間：19:13:20" itemprop="dateCreated datePublished" datetime="2021-06-16T19:10:00+08:00">2021-06-16</time>
+              <time title="創建時間：2021-06-16 19:10:00 / 修改時間：19:55:30" itemprop="dateCreated datePublished" datetime="2021-06-16T19:10:00+08:00">2021-06-16</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -219,12 +219,12 @@
       
         <p>有時候使用 vim 編輯文件，突然畫面就沒有回應，連游標都不會移動。但是切換到同一終端機的其他分頁時，可以正常操作任何行為。對於使用者而言，這就像是鬼打牆啊……</p>
 <span id="more"></span>
-<h2 id="解除畫面鎖定">解除畫面鎖定</h2>
+<h1 id="解除畫面鎖定">解除畫面鎖定</h1>
 <p>其實這是在 vim 裡面點擊 <kbd>Ctrl</kbd> + <kbd>s</kbd> 導致畫面輸出被隱藏。看起來就像是當掉，實際上點擊的每個按鍵都有被 vim 接收，只是沒有顯示出來罷了。</p>
 <p>只要點擊 <kbd>Ctrl</kbd> + <kbd>q</kbd> 就可以恢復畫面輸出，讓一切回到使用者的掌控之下！</p>
 <p>從 windows 系統轉為使用 ubuntu，讓我還殘留著一邊修改文件，一邊使用快捷鍵 <kbd>Ctrl</kbd> + <kbd>s</kbd> 儲存檔案的習慣。沒想到就是這個習慣，反而讓我誤以為當機而重新編輯好幾次啊……</p>
 <p>恢復的同時，會顯示出隱藏期間所有操作的結果。如果畫面鎖定的時候亂敲鍵盤，文件可能就變得一團亂啦！</p>
-<h2 id="復原與取消復原">復原與取消復原</h2>
+<h1 id="復原與取消復原">復原與取消復原</h1>
 <p>在 vim 的命令模式下點擊 <kbd>u</kbd> 是復原前一個變動；<kbd>Ctrl</kbd> + <kbd>r</kbd> 則是取消復原。</p>
 <p>善用這兩個命令，應該就能把文件還原至尚未鎖定前的狀態。</p>
 <p>另外，常常讓我搞錯的是，vim 的復原與取消復原並不是一組的，一個是 <strong>u</strong>；另一個是 <strong>r</strong>。幸好，誤點成 <kbd>Ctrl</kbd> + <kbd>u</kbd> 只是往上移動半個畫面，並不會對文件內容進行修改。</p>
@@ -246,7 +246,7 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/06/09/ScriptedPipeline/" rel="prev" title="介紹 Jenkins Scripted Pipeline">
+    <a href="/2021-06-09-Introduce-Jenkins-Scripted-Pipeline/" rel="prev" title="介紹 Jenkins Scripted Pipeline">
       <i class="fa fa-chevron-left"></i> 介紹 Jenkins Scripted Pipeline
     </a></div>
       <div class="post-nav-item"></div>
@@ -308,7 +308,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E9%99%A4%E7%95%AB%E9%9D%A2%E9%8E%96%E5%AE%9A"><span class="nav-number">1.</span> <span class="nav-text">解除畫面鎖定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%A9%E5%8E%9F%E8%88%87%E5%8F%96%E6%B6%88%E5%BE%A9%E5%8E%9F"><span class="nav-number">2.</span> <span class="nav-text">復原與取消復原</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E9%99%A4%E7%95%AB%E9%9D%A2%E9%8E%96%E5%AE%9A"><span class="nav-number">1.</span> <span class="nav-text">解除畫面鎖定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BE%A9%E5%8E%9F%E8%88%87%E5%8F%96%E6%B6%88%E5%BE%A9%E5%8E%9F"><span class="nav-number">2.</span> <span class="nav-text">復原與取消復原</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
