@@ -24,8 +24,8 @@
   <meta name="description" content="前陣子使用 Jenkins 幫助公司自動化建置程式，也稍微接觸了 CI&#x2F;CD，畢竟 Jenkins 就是一款 CI&#x2F;CD 工具。 此處的 CI 是指持續整合（Continuous Integration），而 CD 則是持續交付或持續部屬（Continuous Delivery &#x2F; Continuous Deployment）。 但這篇文章僅介紹如何撰寫 Jenkins Pipeline sc">
 <meta property="og:type" content="article">
 <meta property="og:title" content="介紹 Jenkins Scripted Pipeline">
-<meta property="og:url" content="https://chihyu224.github.io/2021-06-09-Introduce-Jenkins-Scripted-Pipeline/index.html">
-<meta property="og:site_name" content="告別愛因斯坦與蘇格拉底，開始編譯 Hello, world!">
+<meta property="og:url" content="https://chihyu224.github.io/introduce-jenkins-scripted-pipeline/index.html">
+<meta property="og:site_name" content="Chihyu&#39;s Blog">
 <meta property="og:description" content="前陣子使用 Jenkins 幫助公司自動化建置程式，也稍微接觸了 CI&#x2F;CD，畢竟 Jenkins 就是一款 CI&#x2F;CD 工具。 此處的 CI 是指持續整合（Continuous Integration），而 CD 則是持續交付或持續部屬（Continuous Delivery &#x2F; Continuous Deployment）。 但這篇文章僅介紹如何撰寫 Jenkins Pipeline sc">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2021-06-09T12:00:00.000Z">
@@ -36,7 +36,7 @@
 <meta property="article:tag" content="scripted pipeline">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://chihyu224.github.io/2021-06-09-Introduce-Jenkins-Scripted-Pipeline/">
+<link rel="canonical" href="https://chihyu224.github.io/introduce-jenkins-scripted-pipeline/">
 
 
 <script id="page-configurations">
@@ -49,7 +49,7 @@
   };
 </script>
 
-  <title>介紹 Jenkins Scripted Pipeline | 告別愛因斯坦與蘇格拉底，開始編譯 Hello, world!</title>
+  <title>介紹 Jenkins Scripted Pipeline | Chihyu's Blog</title>
   
 
 
@@ -100,10 +100,10 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">告別愛因斯坦與蘇格拉底，開始編譯 Hello, world!</h1>
+      <h1 class="site-title">Chihyu's Blog</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
-      <p class="site-subtitle" itemprop="description">算是技術部落格…吧</p>
+      <p class="site-subtitle" itemprop="description">Now this is not the end. It is not even the beginning of the end. But it is, perhaps, the end of the beginning.</p>
   </div>
 
   <div class="site-nav-right">
@@ -165,16 +165,16 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="https://chihyu224.github.io/2021-06-09-Introduce-Jenkins-Scripted-Pipeline/">
+    <link itemprop="mainEntityOfPage" href="https://chihyu224.github.io/introduce-jenkins-scripted-pipeline/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="Chihyu Chen">
-      <meta itemprop="description" content="Now this is not the end. It is not even the beginning of the end. But it is, perhaps, the end of the beginning.">
+      <meta itemprop="description" content="When you do not know a thing, to allow that you do not know it.">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="告別愛因斯坦與蘇格拉底，開始編譯 Hello, world!">
+      <meta itemprop="name" content="Chihyu's Blog">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -222,44 +222,44 @@
 <p>此處的 CI 是指持續整合（Continuous Integration），而 CD 則是持續交付或持續部屬（Continuous Delivery / Continuous Deployment）。</p>
 <p>但這篇文章僅介紹<strong>如何撰寫 Jenkins Pipeline script</strong>。</p>
 <span id="more"></span>
-<h1 id="前言">前言</h1>
+<h2 id="前言">前言</h2>
 <p>Pipeline 有兩種完全不同的語法，分別是 Declarative Pipeline 與 Scripted Pipeline。雖然兩種都是寫給 Jenkins 的 Pipeline，但是無法混在一起使用，否則執行時會有各種錯誤。</p>
 <p>不得不提，<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/pipeline/" title="Jenkins Pipeline">官方文件</a>寫得很實用，只是 scripted 語法預設隱藏，必須點擊連結 <strong>Toggle Scripted Pipeline</strong> 才會顯示，這點讓我查資料時吃了些苦頭。提醒一下，以下的所有程式碼都是 <strong>Scripted Pipeline</strong>，且不打算介紹另一種語法。</p>
-<h1 id="基本架構">基本架構</h1>
+<h2 id="基本架構">基本架構</h2>
 <p>以下是從官方文件節錄出來的<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/pipeline/#scripted-pipeline-fundamentals" title="Scripted Pipeline fundamentals">基本架構</a>，想要更詳細的說明可以直接進連結，另外也有簡體中文版本的說明可以參考。個人推薦，若能力許可，直接讀英文文件較佳，比較不會產生誤解或者前後名詞對不上的狀況。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">node &#123;</span><br><span class="line">    stage(&#39;Build&#39;) &#123;</span><br><span class="line">        &#x2F;&#x2F; This is a comment.</span><br><span class="line">    &#125;</span><br><span class="line">    stage(&#39;Test&#39;) &#123;</span><br><span class="line">        &#x2F;&#x2F; Do something here...</span><br><span class="line">    &#125;</span><br><span class="line">    stage(&#39;Deploy&#39;) &#123;</span><br><span class="line">        &#x2F;&#x2F; Just write some steps!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>雖說非強制性，但官方建議將所有 Pipeline 工作內容都放在 <strong>node</strong>（節點）裡面。實際建置時，也是由節點分配執行器與工作區給 Pipeline，一旦移除節點區塊，Pipeline 就無法做任何事情，所以終究是必須加進去的區塊。</p>
 <p><strong>stage</strong>（階段）也是選擇性的，如果恰當切分階段區塊，那麼在 Jenkins 使用者界面會相當清楚地展現每個階段的運作結果、花費時間與其餘詳細資訊。多次建置後，Jenkins 還會計算每個階段平均建置時間，有助於瞭解整體趨勢。</p>
 <p>在 <strong>Scripted Pipeline</strong> 中，不需要 stage<strong>s</strong> 區塊或者是 steps 區塊，直接在階段區塊中撰寫欲執行的步驟即可。</p>
-<h1 id="步驟">步驟</h1>
-<h2 id="echo">echo</h2>
+<h2 id="步驟">步驟</h2>
+<h3 id="echo">echo</h3>
 <p>跟在 Linux 相同用法，<code>echo</code> 顯示的文字都會被保存在 Jenkins 的建置日誌檔中，我幾乎都用來確認該階段的狀態 <code>echo "Stage Build result: $currentBuild.result"</code>。</p>
 <p>其中 <code>$currentBuild.result</code> 是 Jenkins 原生變數，預設值是 null。呼叫前需要自行先設定 <code>currentBuild.result = 'SUCCESS'</code>、<code>currentBuild.result = 'FAILURE'</code> 或者 <code>currentBuild.result = 'UNSTABLE'</code>，分別會顯示綠燈、紅燈或黃燈。</p>
-<h2 id="sh">sh</h2>
+<h3 id="sh">sh</h3>
 <p>在 Unix/Linux 系統使用終端機，如果要在 Windows 系統下使用，可以替換為 <code>bat</code>。能將各種指令包進去，簡單的用法好比說 <code>sh 'cd;mkdir ~/ExDir;touch ~/ExDir/ExFile.log'</code>，也能加上其他選項，例如 <code>returnStdout: true</code> 可以將終端機的標準輸出作為回傳值另作他用。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def FILE_TAIL &#x3D; null</span><br><span class="line">node&#123;</span><br><span class="line">    stage(&#39;Get the tail of log file&#39;) &#123;</span><br><span class="line">        FILE_TAIL &#x3D; sh(script: &#39;tail ~&#x2F;ExDir&#x2F;ExFile.log&#39;, returnStdout: true).trim()</span><br><span class="line">        echo &quot;The tail of log file is $&#123;FILE_TAIL&#125;&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>以上範例中，<code>def FILE_TAIL = null</code> 這個變數 <code>FILE_TAIL</code> 也可以定義在節點區塊或者階段區塊內，就只是全域變數和區域變數的差異。需要注意的是，一旦為 <code>sh</code> 增加選項，就必須將預設可忽略的 <code>script</code> 選項清楚標示，且選項之間要以逗號區隔。如果覺得選項太長、不易閱讀而想要分行，<code>sh</code> 括號內接受換行。如果覺得字串太長，可以使用 <code>+</code> 連結。</p>
 <p>其實這個範例有點脫褲字放屁，因為不特別使用 <code>returnStdout: true</code> 時，<code>sh</code> 的標準輸出就會自動被寫入建置日誌檔，現在卻特地擷取 <code>sh</code> 的標準輸出，再交給 <code>echo</code> 寫入建置日誌檔……沒關係，後面會提到條件控制，就能對變數 <code>FILE_TAIL</code> 做些特別處理了！可參閱官方文件獲得<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/pipeline/steps/workflow-durable-task-step/#sh-shell-script" title="sh Shell Script">更多 sh 的介紹</a>。</p>
 <p>另外，單引號 <code>''</code> 與雙引號 <code>""</code> 內的變數 <code>$&#123;FILE_TAIL&#125;</code> 會有<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#string-interpolation" title="String interpolation">不同的結果</a>，需要多加留意。</p>
-<h1 id="語法">語法</h1>
+<h2 id="語法">語法</h2>
 <p>在官方文件的<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/pipeline/syntax/#scripted-pipeline" title="Scripted Pipeline Syntax">語法說明</a>中，提到 <strong>Scripted Pipeline</strong> 才能使用的兩種語法：<strong>條件控制</strong>與<strong>異常處理</strong>。也就是其他程式語言中常見的 <code>if…else…</code> 以及 <code>try…catch…finally…</code>，後者似乎只有部份語言支援。</p>
-<h2 id="異常處理">異常處理</h2>
+<h3 id="異常處理">異常處理</h3>
 <p>雖然官方文件將異常處理區塊放在階段區塊之中，但我個人在處理<strong>流程出現任何錯誤就取消後續所有動作</strong>時，比較喜歡拉到節點區塊之外，使用一個 <code>try</code> 包住所有可能會出錯的動作，如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    node &#123;</span><br><span class="line">        stage(&#39;Example&#39;) &#123;</span><br><span class="line">            echo &quot;This is an example.&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; catch(Exception err) &#123;</span><br><span class="line">    throw err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>因為在 <code>try</code> 區塊中遇到任何錯誤，都會直接跳到 <code>catch</code> 區塊，再也不回頭，所以要根據哪些是互相關聯的動作，事先規劃要使用幾個 <code>try</code>、各自範圍要多大。</p>
 <p>此外還有 <code>finally</code> 區塊可以使用，適合放一些無論成功或失敗都必須執行的動作。</p>
 <p>有時候，發生某些系統容許，可是基於種種原因而必須中止流程的動作時，能使用 <code>error 'This is the error message!'</code> 回傳自定義的錯誤訊息。</p>
-<h2 id="條件控制">條件控制</h2>
+<h3 id="條件控制">條件控制</h3>
 <p>到處都看得到的條件控制，一旦符合 <code>()</code> 小括號中的條件，就執行 <code>&#123;&#125;</code> 大括號中的動作，否則就繼續確認下一個條件直到結束。最常見的是 <code>if</code> 與 <code>else</code> 的搭配，就是簡單明瞭的二分法。也能使用 <code>else if</code> 增加多個條件，讓動作更分歧，或者只使用 <code>if</code> 針對某條件增加動作。</p>
 <p>條件可以用 <code>&amp;&amp;</code> 表示<strong>兩者皆須成立</strong>，以及 <code>||</code> 表示<strong>其中一者成立</strong>，更加細膩地避開各種意料外的現象。以下是個簡單的例子：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">node &#123;</span><br><span class="line">    stage(&#39;Example&#39;) &#123;</span><br><span class="line">        if(currentBuild.result &#x3D;&#x3D; null || currentBuild.result &#x3D;&#x3D; &#39;SUCCESS&#39;) &#123;</span><br><span class="line">            echo &#39;OK&#39;</span><br><span class="line">        &#125; else if(currentBuild.result &#x3D;&#x3D; &#39;UNSTABLE&#39;) &#123;</span><br><span class="line">            echo &#39;So-so&#39;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            echo &#39;NG&#39;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="定義新函式">定義新函式</h1>
+<h2 id="定義新函式">定義新函式</h2>
 <p>除了使用 <code>def</code> 定義新變數，也可以用來定義新函式，這邊直接放範例，裡面比較特別的只有 <code>slackSend(channel:'#backup', color: colorCode, message: msg)</code> 將 <code>message</code> 指定的字串作為訊息經 Slack 傳進 <code>channel</code> 指定的群組中，並以 <code>color</code> 指定的顏色強調該則訊息。</p>
 <p>不過要使用 <code>slackSend</code> 之前，記得要先在 Jenkins 安裝好 <a target="_blank" rel="noopener" href="https://plugins.jenkins.io/slack/" title="Slack Notification">Slack Plugin</a>！當然也要事先下載 Slack，創建指定的群組。另外還有 email 跟 HipChat 的通知套件可以使用，但我沒有實作過，就不野人獻曝了。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">def costomizedSlackSend(String result &#x3D; &#39;UNKNOWN&#39;) &#123;</span><br><span class="line">    &#x2F;&#x2F; Default values</span><br><span class="line">    def colorCode &#x3D; &#39;#FF0000&#39;</span><br><span class="line">    def message &#x3D; &quot;$&#123;result&#125;: $&#123;env.JOB_NAME&#125; #$&#123;env.BUILD_NUMBER&#125; ($&#123;env.BUILD_URL&#125;)&quot;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Override default color code based on result</span><br><span class="line">    if (result &#x3D;&#x3D; &#39;SUCCESS&#39;) &#123;</span><br><span class="line">        colorCode &#x3D; &#39;#00FF00&#39;</span><br><span class="line">    &#125; else if (result &#x3D;&#x3D; &#39;UNSTABLE&#39;) &#123;</span><br><span class="line">        colorCode &#x3D; &#39;#FFFF00&#39;</span><br><span class="line">    &#125; else if (result &#x3D;&#x3D; &#39;UNKNOWN&#39;) &#123;</span><br><span class="line">        colorCode &#x3D; &#39;#C0C0C0&#39;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; Send notification to Slack</span><br><span class="line">    slackSend(channel:&#39;#backup&#39;, color: colorCode, message: message)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="總結">總結</h1>
+<h2 id="總結">總結</h2>
 <p>為了整理這篇文章，感覺又查了不少資料，對於 Scripted Pipeline 也更熟悉了些。希望下次使用時，不會太惶恐，也不要再發生「我好像有看過這個東西，但又想不起來要怎麼用」的悲劇。</p>
-<h1 id="附錄">附錄</h1>
+<h2 id="附錄">附錄</h2>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">def FILE_TAIL &#x3D; null</span><br><span class="line">try &#123;</span><br><span class="line">    currentBuild.result &#x3D; &#39;SUCCESS&#39;</span><br><span class="line"></span><br><span class="line">    node &#123;</span><br><span class="line">        stage(&#39;Build&#39;) &#123;</span><br><span class="line">            echo &quot;This is an example for Build stage&quot;</span><br><span class="line">            sh &#39;cd; mkdir ~&#x2F;ExDir;&#39; +</span><br><span class="line">               &#39;touch ~&#x2F;ExDir&#x2F;ExFile-1.log;&#39; +</span><br><span class="line">               &#39;touch ~&#x2F;ExDir&#x2F;ExFile-2.log&#39;</span><br><span class="line">            echo &quot;Build $currentBuild.result&quot;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(&#39;Test-1&#39;) &#123;</span><br><span class="line">            FILE_TAIL &#x3D; sh(script: &#39;tail ~&#x2F;ExDir&#x2F;ExFile-1.log&#39;, returnStdout: true).trim()</span><br><span class="line">            if(FILE_TAIL.contains(&quot;success&quot;)) &#123;</span><br><span class="line">                FILE_TAIL &#x3D; null</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                error &#39;Test-1 ERROR!&#39;</span><br><span class="line">            &#125;</span><br><span class="line">            echo &quot;Test-1 $currentBuild.result&quot;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(&#39;Test-2&#39;) &#123;</span><br><span class="line">            FILE_TAIL &#x3D; sh(script: &#39;tail ~&#x2F;ExDir&#x2F;ExFile-2.log&#39;, returnStdout: true).trim()</span><br><span class="line">            if(FILE_TAIL.contains(&quot;success&quot;)) &#123;</span><br><span class="line">                FILE_TAIL &#x3D; null</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                error &#39;Test-2 ERROR!&#39;</span><br><span class="line">            &#125;</span><br><span class="line">            echo &quot;Test-2 $currentBuild.result&quot;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(&#39;Deploy&#39;) &#123;</span><br><span class="line">            echo &quot;This is an example for Deploy stage&quot;</span><br><span class="line">            costomizedSlackSend(currentBuild.result)</span><br><span class="line">            echo &quot;Deploy $currentBuild.result&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; catch(Exception err) &#123;</span><br><span class="line">    currentBuild.result &#x3D; &#39;FAILURE&#39;</span><br><span class="line">    costomizedSlackSend(currentBuild.result)</span><br><span class="line">    throw err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
     </div>
@@ -281,11 +281,11 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021-05-26-Derivation-of-Compton-Wavelength/" rel="prev" title="Derivation of Compton Wavelength">
+    <a href="/derivation-of-compton-wavelength/" rel="prev" title="Derivation of Compton Wavelength">
       <i class="fa fa-chevron-left"></i> Derivation of Compton Wavelength
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021-06-16-How-to-Fix-no-Output-in-vim/" rel="next" title="如何喚回 vim">
+    <a href="/how-to-fix-no-output-in-vim/" rel="next" title="如何喚回 vim">
       如何喚回 vim <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -346,14 +346,14 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%A7%8B"><span class="nav-number">2.</span> <span class="nav-text">基本架構</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F"><span class="nav-number">3.</span> <span class="nav-text">步驟</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#echo"><span class="nav-number">3.1.</span> <span class="nav-text">echo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sh"><span class="nav-number">3.2.</span> <span class="nav-text">sh</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AA%9E%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">語法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%95%B0%E5%B8%B8%E8%99%95%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">異常處理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A2%9D%E4%BB%B6%E6%8E%A7%E5%88%B6"><span class="nav-number">4.2.</span> <span class="nav-text">條件控制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E7%BE%A9%E6%96%B0%E5%87%BD%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">定義新函式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90"><span class="nav-number">6.</span> <span class="nav-text">總結</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E9%8C%84"><span class="nav-number">7.</span> <span class="nav-text">附錄</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%A7%8B"><span class="nav-number">2.</span> <span class="nav-text">基本架構</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F"><span class="nav-number">3.</span> <span class="nav-text">步驟</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#echo"><span class="nav-number">3.1.</span> <span class="nav-text">echo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sh"><span class="nav-number">3.2.</span> <span class="nav-text">sh</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AA%9E%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">語法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%95%B0%E5%B8%B8%E8%99%95%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">異常處理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A2%9D%E4%BB%B6%E6%8E%A7%E5%88%B6"><span class="nav-number">4.2.</span> <span class="nav-text">條件控制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E7%BE%A9%E6%96%B0%E5%87%BD%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">定義新函式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B8%BD%E7%B5%90"><span class="nav-number">6.</span> <span class="nav-text">總結</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E9%8C%84"><span class="nav-number">7.</span> <span class="nav-text">附錄</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
   <p class="site-author-name" itemprop="name">Chihyu Chen</p>
-  <div class="site-description" itemprop="description">Now this is not the end. It is not even the beginning of the end. But it is, perhaps, the end of the beginning.</div>
+  <div class="site-description" itemprop="description">When you do not know a thing, to allow that you do not know it.</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
