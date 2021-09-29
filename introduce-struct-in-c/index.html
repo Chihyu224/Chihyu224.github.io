@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="google-site-verification" content="ipvxVJ-An4Ecy4mjaFI8cN3PWMlEKE_rqa_KHeazRUM" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chihyu224.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前陣子做了個新功能，第一次用 C 語言實作一個結構（structure），所幸時間還算充裕，讓我前後修改三、四次，才終於定案並完工。這篇文章記錄著我陸陸續續修改的心路歷程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="簡介結構">
+<meta property="og:url" content="https://chihyu224.github.io/introduce-struct-in-c/index.html">
+<meta property="og:site_name" content="Chihyu&#39;s Blog">
+<meta property="og:description" content="前陣子做了個新功能，第一次用 C 語言實作一個結構（structure），所幸時間還算充裕，讓我前後修改三、四次，才終於定案並完工。這篇文章記錄著我陸陸續續修改的心路歷程。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-09-28T16:00:00.000Z">
+<meta property="article:author" content="Chihyu Chen">
+<meta property="article:tag" content="C">
+<meta property="article:tag" content="programming language">
+<meta property="article:tag" content="struct">
+<meta property="article:tag" content="結構">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://chihyu224.github.io/introduce-struct-in-c/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>簡介結構 | Chihyu's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Chihyu's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Now this is not the end. It is not even the beginning of the end. But it is, perhaps, the end of the beginning.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://chihyu224.github.io/introduce-struct-in-c/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chihyu Chen">
+      <meta itemprop="description" content="When you do not know a thing, to allow that you do not know it.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chihyu's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          簡介結構
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-09-29 00:00:00 / 修改時間：23:43:38" itemprop="dateCreated datePublished" datetime="2021-09-29T00:00:00+08:00">2021-09-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">程式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前陣子做了個新功能，第一次用 C 語言實作一個結構（structure），所幸時間還算充裕，讓我前後修改三、四次，才終於定案並完工。這篇文章記錄著我陸陸續續修改的心路歷程。</p>
+<span id="more"></span>
+<p>先舉個例子，現在有幾座固定只能裝 8 本書的書架，而我想記錄每座書架上已經放了幾本書、每本書的書名與國際標準書號（ISBN, ）。書名可以使用字符指標的形式（char *）儲存，但是國際標準書號必須用字符矩陣的形式（char []）儲存。因為之後要對國際標準書號的尾碼做些風騷的操作……呃，我是指，要去驗證最後一碼的確認碼計算正確。</p>
+<p>當然還有更多值得記錄的資料，但這個例子只是想要重現<strong>儲存指標的矩陣</strong>與<strong>雙重矩陣</strong>被包含在同一個結構中，可以讓初學者多麼崩潰，也可能只有我很崩潰啦……</p>
+<h2 id="定義基本的-struct">定義基本的 struct</h2>
+<p>先依照目標定義一個結構，由於書本的數量一定會是整數，所以定義為 integer，其餘就如前文所述。另外，突然冒出來的 13 是現行的 ISBN 長度，以前是固定只有 10 碼啦……</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">struct Bookshelf &#123;</span><br><span class="line">	int count;</span><br><span class="line">	char isbn[8][13];</span><br><span class="line">	char *title[8];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;* Declare by</span><br><span class="line">	struct Bookshelf bs1; *&#x2F;</span><br></pre></td></tr></table></figure>
+<h2 id="使用-typedef-簡化聲明">使用 typedef 簡化聲明</h2>
+<p>每次聲明都要在前面打 <code>struct</code> 搞得我有點煩，馬上就給 <code>Bookshelf</code> 一個別名吧！順便也把寫死的那兩個數字獨立定義，之後要修改就只需要在最前面的 <code>define</code> 區塊變更。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#define MAX_BOOKS_CNT 8</span><br><span class="line">#define ISBN_LEN 13</span><br><span class="line"></span><br><span class="line">typedef struct Bookshelf &#123;</span><br><span class="line">	int count;</span><br><span class="line">	char isbn[MAX_BOOKS_CNT][ISBN_LEN];</span><br><span class="line">	char *title[MAX_BOOKS_CNT];</span><br><span class="line">&#125; BOOKSHELF;</span><br><span class="line"></span><br><span class="line">&#x2F;* Declare by</span><br><span class="line">	BOOKSHELF bs1; *&#x2F;</span><br></pre></td></tr></table></figure>
+<p>最後完工的結構大概就長這個樣子，但其實它曾經長得超級複雜。最初我得到的指示要求<strong>盡量減少記憶體的使用量，最好使用 malloc 動態分配記憶體空間</strong>，讓我爬資料爬了一週才實作出來。結果成品被評為太過複雜，操作上容易出錯，未來維護不易。重新討論後才發現需要的空間其實沒多大，就修改方向為固定大小的結構了。</p>
+<h2 id="取用結構中的成員">取用結構中的成員</h2>
+<p>在 C 語言之中，有兩個運算子（<a target="_blank" rel="noopener" href="https://terms.naer.edu.tw/detail/15050969/" title="取自國家教育研究院學術名詞翻譯，亦可譯作運算符">operator</a>）可以取得結構中的資料。有趣的是，我找不到其中一個運算子的正式稱呼，連英文都沒有。這邊就採取英文俗名的直譯來介紹：</p>
+<ul>
+<li><code>.</code> 點運算子（dot operator）</li>
+<li><code>-&gt;</code> 箭頭運算子（arrow operator）</li>
+</ul>
+<h3 id="點運算子作用於結構">點運算子作用於結構</h3>
+<p>先從簡單的點運算子開始舉例，當要在上述結構中儲存資料時，可以這麼做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bs1.title[0] &#x3D; &quot;Example 1&quot;;</span><br><span class="line">strncpy(bs1.isbn[0], &quot;9789861234567&quot;, ISBN_LEN);</span><br><span class="line">bs1.count &#x3D; 1;</span><br></pre></td></tr></table></figure>
+<p>接著，再使用點運算子取出結構中的資料，並打印於畫面上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">printf(&quot;count&#x3D;%d\n&quot;, bs1.count);</span><br><span class="line">printf(&quot;ISBN&#x3D;%c%c%c-%c%c%c-%c%c%c%c-%c%c-%c\n&quot;, bs1.isbn[0][0], bs1.isbn[0][1], bs1.isbn[0][2], bs1.isbn[0][3], bs1.isbn[0][4], bs1.isbn[0][5], bs1.isbn[0][6], bs1.isbn[0][7], bs1.isbn[0][8], bs1.isbn[0][9], bs1.isbn[0][10], bs1.isbn[0][11], bs1.isbn[0][12]);</span><br><span class="line">printf(&quot;title&#x3D;%s\n&quot;, bs1.title[0]);</span><br></pre></td></tr></table></figure>
+<h3 id="如何處理結構指標">如何處理結構指標</h3>
+<p>為了方便起見，可以把「儲存資料至結構中」獨立為一個函數：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void addBook(BOOKSHELF *bs, char *isbn, char *title)</span><br><span class="line">&#123;</span><br><span class="line">	strncpy((*bs).isbn[(*bs).count], isbn, ISBN_LEN);</span><br><span class="line">	(*bs).title[(*bs).count] &#x3D; title;</span><br><span class="line">	(*bs).count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以 C 語言來說，函數的引數在此處必須是指標，不然會有自以為自己寫進去的錯覺。剛從 C# 轉過來時，我常常被取值與取址搞得一個頭兩個大，雖有看到資料說 C# 之中分為 by value 與 by reference 兩種呼叫，但是當年的我根本還沒用到如此高深的 C#……總而言之，要讓資料確實寫入引數中，必須使用指標。</p>
+<p>這時，由於點運算子（.）的優先度<strong>高於</strong>取值的一元運算子（*），導致需要添加很多的括號才能完成上述函數，否則 <code>*bs.count</code> 隱含的是 <code>*(bs.count)</code>，這不是我們想要的結果。</p>
+<h3 id="為簡化而生的箭頭運算子">為簡化而生的箭頭運算子</h3>
+<p>雖然不清楚淵源，但我想，箭頭運算子（-&gt;）是為了簡化這個繁複的過程而誕生。</p>
+<p>讓<strong>「先對結構指標取值，再對該結構取用結構成員」</strong>這兩個步驟的表達，由 <code>(*bs).count</code> 簡化為 <code>bs-&gt;count</code>，使程式碼變得更精簡、更易讀。以此運算子改寫上述函數，會得到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void addBook(BOOKSHELF *bs, char *isbn, char *title)</span><br><span class="line">&#123;</span><br><span class="line">	strncpy(bs-&gt;isbn[bs-&gt;count], isbn, ISBN_LEN);</span><br><span class="line">	bs-&gt;title[bs-&gt;count] &#x3D; title;</span><br><span class="line">	bs-&gt;count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>這樣是不是變得簡單明瞭了呢？</p>
+<h2 id="初始化結構成員">初始化結構成員</h2>
+<p>最後，在寫這篇文章的範例時，我發現剛被聲明的結構，內容基本上是亂碼。在儲存資料前，不小心取用到結構成員，往往會發生悲劇。如果不是太在意效能的話，可以在聲明時，一併將結構成員初始化為 0 或者依情境直接指定第一筆資料：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Initialize a struct to 0. *&#x2F;</span><br><span class="line">BOOKSHELF bs1 &#x3D; &#123;&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;* Initialize a struct with partial data. *&#x2F;</span><br><span class="line">BOOKSHELF bs1 &#x3D; &#123;</span><br><span class="line">	.count &#x3D; 0</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;* Another example. *&#x2F;</span><br><span class="line">BOOKSHELF bs1 &#x3D; &#123;</span><br><span class="line">	.title[0] &#x3D; &quot;建構嵌入式LINUX系統&quot;,</span><br><span class="line">	.isbn[0][0] &#x3D; &#39;9&#39;,</span><br><span class="line">	.isbn[0][1] &#x3D; &#39;7&#39;,</span><br><span class="line">	.isbn[0][2] &#x3D; &#39;8&#39;,</span><br><span class="line">	.isbn[0][3] &#x3D; &#39;9&#39;,</span><br><span class="line">	.isbn[0][4] &#x3D; &#39;8&#39;,</span><br><span class="line">	.isbn[0][5] &#x3D; &#39;6&#39;,</span><br><span class="line">	.isbn[0][6] &#x3D; &#39;7&#39;,</span><br><span class="line">	.isbn[0][7] &#x3D; &#39;7&#39;,</span><br><span class="line">	.isbn[0][8] &#x3D; &#39;9&#39;,</span><br><span class="line">	.isbn[0][9] &#x3D; &#39;4&#39;,</span><br><span class="line">	.isbn[0][10] &#x3D; &#39;3&#39;,</span><br><span class="line">	.isbn[0][11] &#x3D; &#39;0&#39;,</span><br><span class="line">	.isbn[0][12] &#x3D; &#39;7&#39;,</span><br><span class="line">	.count &#x3D; 1</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>這樣就不用擔心，聲明結構後立即取用，會不會出現各種亂碼啦！</p>
+<h2 id="一個可編譯的範例">一個可編譯的範例</h2>
+<p>以下附上書寫本文時的測試範例。通常我都會使用 <code>gcc -Wall &lt;file name&gt;</code>，以便確認所有的警告訊息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line"></span><br><span class="line">#define MAX_BOOKS_CNT 8</span><br><span class="line">#define ISBN_LEN 13</span><br><span class="line"></span><br><span class="line">typedef struct Bookshelf &#123;</span><br><span class="line">	int count;</span><br><span class="line">	char isbn[MAX_BOOKS_CNT][ISBN_LEN];</span><br><span class="line">	char *title[MAX_BOOKS_CNT];</span><br><span class="line">&#125; BOOKSHELF;</span><br><span class="line"></span><br><span class="line">int checkIsbn(char *in)</span><br><span class="line">&#123;</span><br><span class="line">	return (&#39;0&#39; + 10 - ((in[0] + in[2] + in[4] + in[6] + in[8] + in[10] + (in[1] + in[3] + in[5] + in[7] + in[9] + in[11]) * 3 - &#39;0&#39; * 24) % 10)) &#x3D;&#x3D; in[12] ? 0 : 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void addBook(BOOKSHELF *bs, char *isbn, char *title)</span><br><span class="line">&#123;</span><br><span class="line">	printf(&quot;Try to add a book. &quot;);</span><br><span class="line">	printf(&quot;Its ISBN is &#39;%s&#39;, and its title is &#39;%s&#39;.\n&quot;, isbn, title);</span><br><span class="line"></span><br><span class="line">	if (bs-&gt;count &gt;&#x3D; MAX_BOOKS_CNT)</span><br><span class="line">	&#123;       </span><br><span class="line">		printf(&quot;[Error] This bookshelf is full. &quot;);</span><br><span class="line">		printf(&quot;You cannot add this book &#39;%s&#39;!\n\n&quot;, title);</span><br><span class="line">	&#125;</span><br><span class="line">	else if (checkIsbn(isbn) !&#x3D; 0)</span><br><span class="line">	&#123;       </span><br><span class="line">		printf(&quot;[Error] Its ISBN is illegal. &quot;);</span><br><span class="line">		printf(&quot;You cannot add this book &#39;%s&#39;!\n\n&quot;, title);</span><br><span class="line">	&#125;</span><br><span class="line">	else &#x2F;* (bs-&gt;count &lt; MAX_BOOKS_CNT) &amp;&amp; (checkIsbn(isbn) &#x3D;&#x3D; 0) *&#x2F;</span><br><span class="line">	&#123;       </span><br><span class="line">		strncpy(bs-&gt;isbn[bs-&gt;count], isbn, ISBN_LEN);</span><br><span class="line">		bs-&gt;title[bs-&gt;count] &#x3D; title;</span><br><span class="line">		bs-&gt;count++;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void printBookshelf(BOOKSHELF bs)</span><br><span class="line">&#123;</span><br><span class="line">	int idx;</span><br><span class="line"></span><br><span class="line">	printf(&quot;Information:\n&quot;);</span><br><span class="line">	printf(&quot;\tcount&#x3D; %d\n&quot;, bs.count);</span><br><span class="line">	printf(&quot;\tISBN | title&#x3D;\n&quot;);</span><br><span class="line">	for (idx &#x3D; 0; idx &lt; bs.count; idx++)</span><br><span class="line">	&#123;   </span><br><span class="line">		printf(&quot;\t\t%d. %c%c%c-%c%c%c-%c%c%c%c-%c%c-%c | %s\n&quot;,</span><br><span class="line">			(idx + 1), bs.isbn[idx][0], bs.isbn[idx][1],</span><br><span class="line">			bs.isbn[idx][2], bs.isbn[idx][3], bs.isbn[idx][4],</span><br><span class="line">			bs.isbn[idx][5], bs.isbn[idx][6], bs.isbn[idx][7],</span><br><span class="line">			bs.isbn[idx][8], bs.isbn[idx][9], bs.isbn[idx][10],</span><br><span class="line">			bs.isbn[idx][11], bs.isbn[idx][12], bs.title[idx]);</span><br><span class="line">	&#125;   </span><br><span class="line">	printf(&quot;End\n\n&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	BOOKSHELF bs1 &#x3D; &#123;&#125;;</span><br><span class="line"></span><br><span class="line">	printf(&quot;Before add anything...\n&quot;);</span><br><span class="line">	printBookshelf(bs1);</span><br><span class="line"></span><br><span class="line">	addBook(&amp;bs1, &quot;9789867794307&quot;, &quot;建構嵌入式LINUX系統&quot;);</span><br><span class="line">	addBook(&amp;bs1, &quot;9789862222225&quot;, &quot;找不到第二本書了&quot;);</span><br><span class="line">	addBook(&amp;bs1, &quot;9789863333333&quot;, &quot;就只是舉個例子&quot;);</span><br><span class="line">	addBook(&amp;bs1, &quot;9789864444441&quot;, &quot;I am another example&quot;);</span><br><span class="line">	addBook(&amp;bs1, &quot;9789865555559&quot;, &quot;Do You Have a Nice Day&quot;);</span><br><span class="line">	addBook(&amp;bs1, &quot;9789866666667&quot;, &quot;Let&#39;s Try Again&quot;);</span><br><span class="line">	addBook(&amp;bs1, &quot;9789867777775&quot;, &quot;舉例七&quot;);</span><br><span class="line">	addBook(&amp;bs1, &quot;9789868888883&quot;, &quot;舉例八&quot;);</span><br><span class="line">	addBook(&amp;bs1, &quot;9789869999990&quot;, &quot;舉例九，妳大概看不到我&quot;);</span><br><span class="line">	addBook(&amp;bs1, &quot;9789869999991&quot;, &quot;舉例十，妳應該看不到我&quot;);</span><br><span class="line"></span><br><span class="line">	printf(&quot;After add books...\n&quot;);</span><br><span class="line">	printBookshelf(bs1);</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下則是執行結果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">chihyu@chihyu-demo-ubuntu:~&#x2F;exercise&#x2F;struct-exercise$ .&#x2F;a.out</span><br><span class="line">Before add anything...</span><br><span class="line">Information:</span><br><span class="line">	count&#x3D; 0</span><br><span class="line">	ISBN | title&#x3D;</span><br><span class="line">End</span><br><span class="line"></span><br><span class="line">Try to add a book. Its ISBN is &#39;9789867794307&#39;, and its title is &#39;建構嵌入式LINUX系統&#39;.</span><br><span class="line">Try to add a book. Its ISBN is &#39;9789862222225&#39;, and its title is &#39;找不到第二本書了&#39;.</span><br><span class="line">Try to add a book. Its ISBN is &#39;9789863333333&#39;, and its title is &#39;就只是舉個例子&#39;.</span><br><span class="line">Try to add a book. Its ISBN is &#39;9789864444441&#39;, and its title is &#39;I am another example&#39;.</span><br><span class="line">Try to add a book. Its ISBN is &#39;9789865555559&#39;, and its title is &#39;Do You Have a Nice Day&#39;.</span><br><span class="line">Try to add a book. Its ISBN is &#39;9789866666667&#39;, and its title is &#39;Let&#39;s Try Again&#39;.</span><br><span class="line">Try to add a book. Its ISBN is &#39;9789867777775&#39;, and its title is &#39;舉例七&#39;.</span><br><span class="line">Try to add a book. Its ISBN is &#39;9789868888883&#39;, and its title is &#39;舉例八&#39;.</span><br><span class="line">Try to add a book. Its ISBN is &#39;9789869999990&#39;, and its title is &#39;舉例九，妳大概看不到我&#39;.</span><br><span class="line">[Error] This bookshelf is full. You cannot add this book &#39;舉例九，妳大概看不到我&#39;!</span><br><span class="line"></span><br><span class="line">Try to add a book. Its ISBN is &#39;9789869999991&#39;, and its title is &#39;舉例十，妳應該看不到我&#39;.</span><br><span class="line">[Error] This bookshelf is full. You cannot add this book &#39;舉例十，妳應該看不到我&#39;!</span><br><span class="line"></span><br><span class="line">After add books...</span><br><span class="line">Information:</span><br><span class="line">	count&#x3D; 8</span><br><span class="line">	ISBN | title&#x3D;</span><br><span class="line">		1. 978-986-7794-30-7 | 建構嵌入式LINUX系統</span><br><span class="line">		2. 978-986-2222-22-5 | 找不到第二本書了</span><br><span class="line">		3. 978-986-3333-33-3 | 就只是舉個例子</span><br><span class="line">		4. 978-986-4444-44-1 | I am another example</span><br><span class="line">		5. 978-986-5555-55-9 | Do You Have a Nice Day</span><br><span class="line">		6. 978-986-6666-66-7 | Let&#39;s Try Again</span><br><span class="line">		7. 978-986-7777-77-5 | 舉例七</span><br><span class="line">		8. 978-986-8888-88-3 | 舉例八</span><br><span class="line">End</span><br><span class="line"></span><br><span class="line">chihyu@chihyu-demo-ubuntu:~&#x2F;exercise&#x2F;struct-exercise$ </span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C</a>
+              <a href="/tags/programming-language/" rel="tag"># programming language</a>
+              <a href="/tags/struct/" rel="tag"># struct</a>
+              <a href="/tags/%E7%B5%90%E6%A7%8B/" rel="tag"># 結構</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/why-git-warning-replace-crlf-by-lf/" rel="prev" title="為何 git 要警告 CRLF will be replaced by LF">
+      <i class="fa fa-chevron-left"></i> 為何 git 要警告 CRLF will be replaced by LF
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/struct/" rel="next" title="簡介結構">
+      簡介結構 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E7%BE%A9%E5%9F%BA%E6%9C%AC%E7%9A%84-struct"><span class="nav-number">1.</span> <span class="nav-text">定義基本的 struct</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-typedef-%E7%B0%A1%E5%8C%96%E8%81%B2%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">使用 typedef 簡化聲明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%96%E7%94%A8%E7%B5%90%E6%A7%8B%E4%B8%AD%E7%9A%84%E6%88%90%E5%93%A1"><span class="nav-number">3.</span> <span class="nav-text">取用結構中的成員</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%BB%9E%E9%81%8B%E7%AE%97%E5%AD%90%E4%BD%9C%E7%94%A8%E6%96%BC%E7%B5%90%E6%A7%8B"><span class="nav-number">3.1.</span> <span class="nav-text">點運算子作用於結構</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%99%95%E7%90%86%E7%B5%90%E6%A7%8B%E6%8C%87%E6%A8%99"><span class="nav-number">3.2.</span> <span class="nav-text">如何處理結構指標</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%82%BA%E7%B0%A1%E5%8C%96%E8%80%8C%E7%94%9F%E7%9A%84%E7%AE%AD%E9%A0%AD%E9%81%8B%E7%AE%97%E5%AD%90"><span class="nav-number">3.3.</span> <span class="nav-text">為簡化而生的箭頭運算子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%B5%90%E6%A7%8B%E6%88%90%E5%93%A1"><span class="nav-number">4.</span> <span class="nav-text">初始化結構成員</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%80%8B%E5%8F%AF%E7%B7%A8%E8%AD%AF%E7%9A%84%E7%AF%84%E4%BE%8B"><span class="nav-number">5.</span> <span class="nav-text">一個可編譯的範例</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chihyu Chen</p>
+  <div class="site-description" itemprop="description">When you do not know a thing, to allow that you do not know it.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chihyu Chen</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
