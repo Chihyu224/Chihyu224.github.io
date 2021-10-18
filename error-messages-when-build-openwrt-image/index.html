@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="google-site-verification" content="ipvxVJ-An4Ecy4mjaFI8cN3PWMlEKE_rqa_KHeazRUM" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chihyu224.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="這幾天開始接觸 OpenWrt。雖說網路上資源豐富，但我卻卡在不會下載檔案。繞了一圈路才發現，其實我需要的是原始碼，只要使用 git clone 就可以得到一份完整檔案了啊！完全不明白自己花了好幾個小時下載、解壓縮 OpenWrt 官方網站上的映像檔（image）是想要做什麼，人生總是無意間就被浪費了呢！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="建構 OpenWrt 映像檔可能出現的錯誤訊息">
+<meta property="og:url" content="https://chihyu224.github.io/error-messages-when-build-openwrt-image/index.html">
+<meta property="og:site_name" content="Chihyu&#39;s Blog">
+<meta property="og:description" content="這幾天開始接觸 OpenWrt。雖說網路上資源豐富，但我卻卡在不會下載檔案。繞了一圈路才發現，其實我需要的是原始碼，只要使用 git clone 就可以得到一份完整檔案了啊！完全不明白自己花了好幾個小時下載、解壓縮 OpenWrt 官方網站上的映像檔（image）是想要做什麼，人生總是無意間就被浪費了呢！">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-10-18T14:17:01.000Z">
+<meta property="article:modified_time" content="2021-10-18T14:17:01.000Z">
+<meta property="article:author" content="Chihyu Chen">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="OpenWrt">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://chihyu224.github.io/error-messages-when-build-openwrt-image/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>建構 OpenWrt 映像檔可能出現的錯誤訊息 | Chihyu's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Chihyu's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Now this is not the end. It is not even the beginning of the end. But it is, perhaps, the end of the beginning.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://chihyu224.github.io/error-messages-when-build-openwrt-image/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chihyu Chen">
+      <meta itemprop="description" content="When you do not know a thing, to allow that you do not know it.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chihyu's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          建構 OpenWrt 映像檔可能出現的錯誤訊息
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2021-10-18 22:17:01" itemprop="dateCreated datePublished" datetime="2021-10-18T22:17:01+08:00">2021-10-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">程式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>這幾天開始接觸 OpenWrt。雖說網路上資源豐富，但我卻卡在不會下載檔案。繞了一圈路才發現，其實我需要的是原始碼，只要使用 <code>git clone</code> 就可以得到一份完整檔案了啊！完全不明白自己花了好幾個小時下載、解壓縮 OpenWrt 官方網站上的映像檔（image）是想要做什麼，人生總是無意間就被浪費了呢！</p>
+<span id="more"></span>
+<h2 id="從下載開始">從下載開始</h2>
+<p>首先，移動到準備放置 OpenWrt 原始碼的資料夾，接著使用指令 <code>git clone https://git.openwrt.org/openwrt/openwrt.git</code>，等待克隆的時間長短取決於網速快慢。</p>
+<p>當然，電腦首先要安裝好 Git，不然會跳出錯誤訊息。之前在 Windows 10 架設這個部落格時，我就犯過蠢，誤以為安裝 GitHub Desktop 等同安裝 Git，鬼打牆了老半天。</p>
+<p>克隆完成會得到一個叫 openwrt 的資料夾。可以在該資料夾內使用 <code>git log</code> 查看修改紀錄，或者使用 <code>git tag</code> 確認有哪些標籤，也能使用 <code>git branch -a</code> 查看本地與遠端的所有分支。以現狀來說，最新版本的 OpenWrt 21.02.0 發行不到兩個月，因而我使用 <code>git checkout v19.07.8</code> 切換回前一個版本的標籤處再建構。</p>
+<h2 id="快速入門">快速入門</h2>
+<p>依據跟著原始碼一起被下載的 README 即可迅速地建構 OpenWrt。另外，似乎在 21.02.0 開始將 README 改為 README.md，內容也寫得更詳細。但基本上是以下四個步驟，依序使用就能成功建構映像檔。</p>
+<ol type="1">
+<li><code>./scripts/feeds update -a</code></li>
+<li><code>./scripts/feeds install -a</code></li>
+<li><code>make menuconfig</code></li>
+<li><code>make</code></li>
+</ol>
+<p>其中，第三步可以調整設定值，讓建構出的映像檔符合自身需求。當然也可以直接修改資料夾中的 .config，只是 <code>make menuconfig</code> 可使其以圖形化界面顯示，更易於理解各項設定值。</p>
+<h2 id="缺乏相依套件">缺乏相依套件</h2>
+<p>當進行到建構第三步驟，使用 <code>make menuconfig</code> 時，跳出了下列錯誤訊息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Build dependency: Please install ncurses. (Missing libncurses.so or ncurses.h)</span><br><span class="line">Build dependency: Please install GNU &#39;awk&#39;</span><br></pre></td></tr></table></figure>
+<p>原因是使用中的主機缺乏某些依賴元件。如果作業系統跟我一樣使用 Ubuntu，那麼只需要使用 <code>sudo apt-get install libncurses5-dev gawk</code> 這行指令。libncurses5-dev 對應 ncurses；gawk 則是對應 awk，安裝完成就能順利執行。</p>
+<p>如果使用其他作業系統，請參照 <a target="_blank" rel="noopener" href="https://openwrt.org/docs/guide-developer/build-system/install-buildsystem" title="[OpenWrt Wiki] Build System Setup">OpenWrt 官方網站的對照表</a>，安裝應當預先準備的套件。</p>
+<h2 id="缺乏建構-vdi-所需套件">缺乏建構 VDI 所需套件</h2>
+<p>接著在進行第四步驟 <code>make</code> 又顯示 Error……這次在錯誤訊息中，可以看到建議：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Please re-run make with -j1 V&#x3D;s or V&#x3D;sc for a higher verbosity level to see what&#39;s going on</span><br></pre></td></tr></table></figure>
+<p>遵循建議，增加引數，使用 <code>make -j1 V=s</code> 再次編譯，得到非常詳盡的輸出。老實說，一時之間我根本看不出問題出在哪裡，後來又執行了一次 <code>make -j1 V=s &gt; log.txt</code>，接著在 log.txt 之中搜尋 ERROR 或者 WARNING 等詞彙，才找到關鍵：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WARNING: Install qemu-img to create VDI&#x2F;VMDK images</span><br></pre></td></tr></table></figure>
+<p>看來這次的問題來自，我想建構 VDI 映像檔（Virtual Desktop Infrastructure image），卻未安裝必需套件 QEMU。搜尋後得知，Ubuntu 系統使用 <code>sudo apt-get install qemu</code> 即可解決。</p>
+<p>如果不是要建構給 VirtualBox 或者 VMware 的映像檔，應該就不需要這個套件。</p>
+<h2 id="建構成果">建構成果</h2>
+<p>最後，如果一切順利，沒有再顯示任何錯誤訊息，將能在 ~/openwrt/bin/targets/ 資料夾中找到建構出的映像檔。</p>
+<p>由於我的建構目標是：</p>
+<ul>
+<li>x86 64 位元的架構</li>
+<li>檔案系統使用 ext4（Fourth extended filesystem，第四代擴充套件檔案系統）</li>
+<li>預計安裝在 VirtualBox</li>
+</ul>
+<p>所以完整的映像檔路徑為 ~/openwrt/bin/targets/x86/64/openwrt-x86-64-combined-ext4.vdi，後續則依使用情境決定如何運用建構好的映像檔。</p>
+<h2 id="額外說明">額外說明</h2>
+<h3 id="關於-make">關於 make</h3>
+<p>可以加上引數，形成 <code>make -j24</code>，讓更多 CPU 核心被用來建構映像檔，多執行續執行以節省時間。基本上，<code>-j</code> 後面的數字越大越好，當超出實際可使用的 CPU 核心數量時，會自動以可使用的最大值運作。</p>
+<h3 id="關於-x86-與-x64">關於 x86 與 x64</h3>
+<p>在選擇目標系統為 x86 之後，還需要選擇 32 位元或者是 64 位元。這一點讓我剛開始有點困惑，想說 Windows 之中顯示 x86 不就限定於 32 位元了嗎？與 x86 相對的不是 x64 嗎？</p>
+<p>所幸看到<a target="_blank" rel="noopener" href="https://www.ithome.com.tw/node/56880" title="iT自救術─x86和x64到底有什麼差異？">這篇文章</a>中的解釋：</p>
+<blockquote>
+<p>x86其實是指過去處理器的通稱，Intel以前的處理器大多以86為其產品編號的末兩碼——8086、80286、386、486……。即使到了Pentium時代，大家私底下還是用586、686這樣的說法。</p>
+</blockquote>
+<p>總之，就我的理解，32 位元處理器曾經稱霸過一段時間，導致 x86 一詞已泛指 32 位元處理器。但實質意義上，x86 指稱的是<strong>基於 Intel 8086 的處理器指令集架構</strong>，所以還需要選擇位元。</p>
+<p>真正與 x86 相對的，應該會是其他的目標系統架構，比如說：Broadcom BCM47xx/53xx (ARM)、Lantiq、MediaTek Ralink ARM、NVIDIA Tegra、Qualcomm Atheros IPQ806X 等等，但這些可能要接觸嵌入式系統（embedded system）才有機會使用到吧。</p>
+<p>至於為何只有 32 位元與 64 位元兩個選項？因為 OpenWrt 這個專案目前就只有支援這兩種。我猜想是由於更大或更小的使用者都太少了。</p>
+<h3 id="關於檔案系統">關於檔案系統</h3>
+<p>此外，Linux 陣營較常使用的檔案系統，除了 ext4 還有 squashfs。根據<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/SquashFS" title="SquashFS - 維基百科">維基百科 SquashFS 條目</a>，是一套唯讀的壓縮檔案系統，適用於較缺乏系統資源的電腦。</p>
+<p>另一方面，微軟開發的檔案系統有 NTFS（New Technology File System）與 FAT32（File Allocation Table）。後者尾綴的 32 是指 32 位元，目前於 USB 與較舊的微軟作業系統中可見。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
+              <a href="/tags/OpenWrt/" rel="tag"># OpenWrt</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/get-true-end-of-escape-from-japan-festival/" rel="prev" title="取得從日本祭典逃脫真結局">
+      <i class="fa fa-chevron-left"></i> 取得從日本祭典逃脫真結局
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%9E%E4%B8%8B%E8%BC%89%E9%96%8B%E5%A7%8B"><span class="nav-number">1.</span> <span class="nav-text">從下載開始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%85%A5%E9%96%80"><span class="nav-number">2.</span> <span class="nav-text">快速入門</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E4%B9%8F%E7%9B%B8%E4%BE%9D%E5%A5%97%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">缺乏相依套件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E4%B9%8F%E5%BB%BA%E6%A7%8B-vdi-%E6%89%80%E9%9C%80%E5%A5%97%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text">缺乏建構 VDI 所需套件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E6%A7%8B%E6%88%90%E6%9E%9C"><span class="nav-number">5.</span> <span class="nav-text">建構成果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%8D%E5%A4%96%E8%AA%AA%E6%98%8E"><span class="nav-number">6.</span> <span class="nav-text">額外說明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%9C%E6%96%BC-make"><span class="nav-number">6.1.</span> <span class="nav-text">關於 make</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%9C%E6%96%BC-x86-%E8%88%87-x64"><span class="nav-number">6.2.</span> <span class="nav-text">關於 x86 與 x64</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%9C%E6%96%BC%E6%AA%94%E6%A1%88%E7%B3%BB%E7%B5%B1"><span class="nav-number">6.3.</span> <span class="nav-text">關於檔案系統</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chihyu Chen</p>
+  <div class="site-description" itemprop="description">When you do not know a thing, to allow that you do not know it.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chihyu Chen</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
