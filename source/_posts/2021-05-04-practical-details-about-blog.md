@@ -1,6 +1,7 @@
 ---
 title: 實用細節
 date: 2021-05-04 22:00:00
+updated: 2021-05-04 22:00:00
 categories: 程式
 tags: 
 - Hexo
@@ -9,19 +10,19 @@ tags:
 
 重看了前一篇文章的參考連結，突然發現一些無意間忽略但很實用的細節！
 
-##### 關於 Hexo
+## 關於 Hexo
 比如說，在產生靜態檔之前，可以使用 `$ hexo clean` 清除舊的靜態檔。
 難怪之前修改完成也產生新的靜態檔，卻總是看到修改前的畫面⋯⋯
 <!-- more -->
 
 另外有些可以組合的指令
 
-    $ hexo d -g    # hexo generate + hexo deploy
-    $ hexo s -g    # hexo generate + hexo server
+    $ hexo d -g    ## hexo generate + hexo deploy
+    $ hexo s -g    ## hexo generate + hexo server
 
 雖然 `-g` 看起來在後面，但其實是先執行的動作。
 
-##### 關於 Markdown
+## 關於 Markdown
 如果沒有特別設定，部落格的文章內容將全文顯示於首頁。但我覺得這樣有點太冗長，畫面也不甚美觀。才發現有個**閱讀更多**的指令可以用！
 
     <!-- more -->

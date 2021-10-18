@@ -1,6 +1,7 @@
 ---
 title: Derivation of Compton Wavelength
 date: 2021-05-26 00:43:25
+updated: 2021-05-26 00:43:25
 categories: 科學
 tags:
 - photon
