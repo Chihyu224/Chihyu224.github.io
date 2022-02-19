@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="google-site-verification" content="ipvxVJ-An4Ecy4mjaFI8cN3PWMlEKE_rqa_KHeazRUM" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chihyu224.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近需要在程式中計算字串的 MD5，因而搜尋了不少資料，像是如何在終端機產生，或是在 C 程式碼中添加它。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何產生 MD5 雜湊值">
+<meta property="og:url" content="https://chihyu224.github.io/how-to-generate-md5-hash-value/index.html">
+<meta property="og:site_name" content="Chihyu&#39;s Blog">
+<meta property="og:description" content="最近需要在程式中計算字串的 MD5，因而搜尋了不少資料，像是如何在終端機產生，或是在 C 程式碼中添加它。">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2022-02-19T07:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-19T07:00:00.000Z">
+<meta property="article:author" content="Chihyu Chen">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="C">
+<meta property="article:tag" content="programming language">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://chihyu224.github.io/how-to-generate-md5-hash-value/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>如何產生 MD5 雜湊值 | Chihyu's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Chihyu's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Now this is not the end. It is not even the beginning of the end. But it is, perhaps, the end of the beginning.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://chihyu224.github.io/how-to-generate-md5-hash-value/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chihyu Chen">
+      <meta itemprop="description" content="When you do not know a thing, to allow that you do not know it.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chihyu's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何產生 MD5 雜湊值
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2022-02-19 15:00:00" itemprop="dateCreated datePublished" datetime="2022-02-19T15:00:00+08:00">2022-02-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">程式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">閱讀次數：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近需要在程式中計算字串的 MD5，因而搜尋了不少資料，像是如何在終端機產生，或是在 C 程式碼中添加它。</p>
+<span id="more"></span>
+<h2 id="什麼是-md5">什麼是 MD5</h2>
+<p>MD5 是一種加密用的雜湊函數（hash function），可由一份檔案或者一段字串產生出 128 位元的雜湊值（hash value）。即使輸入值的差異極小，得到的雜湊值也會有顯著差異，因而被用來確認資料傳輸後的完整性。</p>
+<p>比如說，在下載映像檔後，計算該檔案的 MD5，就可以跟「映像檔提供者計算出的 MD5」做比較，若兩者一致，則可視作檔案正常、無毀損。</p>
+<p>現在已被證實，MD5 無法防止碰撞攻擊，故不應使用於安全性憑證。</p>
+<h2 id="在終端機的運用">在終端機的運用</h2>
+<p>以 ubuntu 16.04 LTS 來說，預載就包含 <code>md5sum</code> 這個指令，只要加上檔名，即可在終端機得到 MD5。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ cat example_1.txt </span><br><span class="line">chihyu</span><br><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ md5sum example_1.txt </span><br><span class="line">249c8275bc209c09b2a8a8700d813590  example_1.txt</span><br><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ cat example_2.txt </span><br><span class="line">Chihyu</span><br><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ md5sum example_2.txt </span><br><span class="line">70f647210d6dabac410f268963c6e20f  example_2.txt</span><br></pre></td></tr></table></figure>
+<p>也可以直接加密字串，結尾有沒有<strong>換行符號</strong>會有顯著差異。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ <span class="built_in">echo</span> <span class="string">&#x27;chihyu&#x27;</span> | md5sum</span><br><span class="line">249c8275bc209c09b2a8a8700d813590  -</span><br><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ <span class="built_in">echo</span> -n <span class="string">&#x27;chihyu&#x27;</span> | md5sum</span><br><span class="line">2c8b36be217ca4a5727c86a86f1f63ca  -</span><br></pre></td></tr></table></figure>
+<p>如果不想要行末顯示的檔名或者 - ，可以搭配 <code>cut</code> 指令使用。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ <span class="built_in">echo</span> -n <span class="string">&#x27;chihyu&#x27;</span> | md5sum | cut -d <span class="string">&#x27; &#x27;</span> -f1</span><br><span class="line">2c8b36be217ca4a5727c86a86f1f63ca</span><br></pre></td></tr></table></figure>
+<h2 id="在-c-語言的運用">在 C 語言的運用</h2>
+<p>首先安裝必要的庫，才有函數可以呼叫，有些資料說要使用 <code>sudo apt-get install openssl</code> ，不過我使用的是這一個：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libssl-dev</span><br></pre></td></tr></table></figure>
+<p>接著，在 C 語言程式碼中引用 <code>#include &lt;openssl/md5.h&gt;</code> 就可以輕鬆產生 MD5。雖然我打算以 16 個 16 進位的字元來表示 MD5，但使用 openssl 函數返回的值會是 unsigned char array，尚須處理才會顯示成該格式。</p>
+<p>以下是一段簡單的示範程式碼：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ cat md5.c </span><br><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;string.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;openssl/md5.h&gt;</span></span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">	const char *str = <span class="string">&quot;The quick brown fox jumps over the lazy dog&quot;</span>;</span><br><span class="line">	unsigned char digest[MD5_DIGEST_LENGTH];</span><br><span class="line">	MD5_CTX context;</span><br><span class="line"></span><br><span class="line">	MD5_Init(&amp;context);</span><br><span class="line">	MD5_Update(&amp;context, str, strlen(str));</span><br><span class="line">	MD5_Final(digest, &amp;context);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;str: &#x27;%s&#x27;\nmd5: &#x27;&quot;</span>, str);</span><br><span class="line">	<span class="keyword">for</span> (int i = 0; i &lt; MD5_DIGEST_LENGTH; i++) &#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;%02x&quot;</span>, digest[i]);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;&#x27;\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ gcc md5.c -lcrypto -o md5</span><br><span class="line">chihyu@chihyu-demo-ubuntu:~/project$ ./md5 </span><br><span class="line">str: <span class="string">&#x27;The quick brown fox jumps over the lazy dog&#x27;</span></span><br><span class="line">md5: <span class="string">&#x27;9e107d9d372bb6826bd81d3542a419d6&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>需要特別注意的是，gcc 編譯時需要加上 <code>-lcrypto</code> 。</p>
+<p>希望下次需要產生這個雜湊值時，這篇筆記可以讓自己迅速地解決。</p>
+<h2 id="額外技巧">額外技巧</h2>
+<p>使用 printf 搭配一些格式說明符（format specifier）可以改變顯示的格式，我個人較常使用的有：</p>
+<ul>
+<li><code>%c</code> 顯示字元（character）。</li>
+<li><code>%s</code> 顯示字串（string）。</li>
+<li><code>%d</code> 顯示 10 進位制（decimal）的整數。</li>
+<li><code>%x</code> 與 <code>%X</code> 顯示 16 進位制（hexadecimal）的整數。</li>
+</ul>
+<p>16 進位制特別標注大小寫，是因為 10-15 會依據說明符，顯示為 a-f 或者 A-F。</p>
+<p>也就是說，若將上方示範程式碼中 <code>printf("%02x", digest[i]);</code> 修改為 <code>printf("%02X", digest[i]);</code> ，結果也將變成 <code>md5: '9E107D9D372BB6826BD81D3542A419D6'</code> 。</p>
+<p>至於 <code>%</code> 與 <code>x</code> 之間夾雜的 <code>02</code> 說明，無論該數值有幾位，都將以至少 2 個字元顯示，且以 0 填補空格。若未指定，則將顯示空白。另外，如果加上 <code>-</code> 將會靠左對齊。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">format: &quot;%05X&quot;</span><br><span class="line">md5: &#39;0009E000100007D0009D000370002B000B6000820006B000D80001D0003500042000A400019000D6&#39;</span><br><span class="line"></span><br><span class="line">format: &quot;%5X&quot;</span><br><span class="line">md5: &#39;   9E   10   7D   9D   37   2B   B6   82   6B   D8   1D   35   42   A4   19   D6&#39;</span><br><span class="line"></span><br><span class="line">format: &quot;%-5X&quot;</span><br><span class="line">md5: &#39;9E   10   7D   9D   37   2B   B6   82   6B   D8   1D   35   42   A4   19   D6   &#39;</span><br></pre></td></tr></table></figure>
+<p>還有一些比較進階，也比較少用的技巧，改天再整理出來。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
+              <a href="/tags/C/" rel="tag"># C</a>
+              <a href="/tags/programming-language/" rel="tag"># programming language</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/introduce-thai-script-and-thai-numerals/" rel="prev" title="簡單介紹泰文字母與泰文數字">
+      <i class="fa fa-chevron-left"></i> 簡單介紹泰文字母與泰文數字
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E9%BA%BC%E6%98%AF-md5"><span class="nav-number">1.</span> <span class="nav-text">什麼是 MD5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E7%B5%82%E7%AB%AF%E6%A9%9F%E7%9A%84%E9%81%8B%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">在終端機的運用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8-c-%E8%AA%9E%E8%A8%80%E7%9A%84%E9%81%8B%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">在 C 語言的運用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%8D%E5%A4%96%E6%8A%80%E5%B7%A7"><span class="nav-number">4.</span> <span class="nav-text">額外技巧</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chihyu Chen</p>
+  <div class="site-description" itemprop="description">When you do not know a thing, to allow that you do not know it.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chihyu Chen</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
